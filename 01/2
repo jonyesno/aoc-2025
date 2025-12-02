@@ -1,0 +1,38 @@
+#!/usr/bin/env python3.11
+
+import fileinput
+import re
+
+pos = 50
+zeroes = 0
+re = re.compile("^([LR])(\\d+)$")
+
+with fileinput.input() as f:
+    for line in f:
+        dir, num = re.search(line).groups()
+        num = int(num)
+
+        if dir == "L":
+            new = pos - num
+
+            # too much fiddle tbh
+            if new == 0:
+                transits = 1 # landed on zero
+            elif new > 0:
+                transits = 0 # didn't cross zero
+            elif pos == 0:
+                # started on zero `// -100` is ok
+                transits = (new // -100)
+            else:
+                # crossed zero, `// -100` undercounts
+                transits = (new // -100) + 1
+
+            pos = new % 100
+        else:
+            new = pos + num
+            transits = new // 100
+            pos = new % 100
+
+        zeroes += transits
+
+print(zeroes) # 6561

@@ -1,0 +1,23 @@
+#!/usr/bin/env python3.11
+
+import fileinput
+import re
+
+pos = 50
+zeroes = 0
+re = re.compile("^([LR])(\\d+)$")
+
+with fileinput.input() as f:
+    for line in f:
+        dir, num = re.search(line).groups()
+        num = int(num)
+
+        if dir == "L":
+            num = -num
+
+        pos = (pos + num) % 100
+
+        if pos == 0:
+            zeroes += 1
+
+print(zeroes) # 1145
