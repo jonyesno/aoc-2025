@@ -1,0 +1,12 @@
+[lint]
+select = [
+  "ALL"
+]
+
+ignore = [
+  "A001", # module overshadow
+  "D100", # docstrings
+  "D211", # rule conflict
+  "D213", # rule conflict
+  "T201", # print
+]
