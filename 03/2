@@ -1,0 +1,40 @@
+#!/usr/bin/env python3.11
+
+import array as arr
+import fileinput
+
+WANT_DIGITS=12
+
+total = 0
+
+def index_of_valid_max(digits: arr, start: int, remaining: int) -> int:
+    """Position of the maximum digit in the array that's far enough left of the end."""
+    working = arr.array(digits.typecode, digits[start:]) # right of the previous max
+    length  = len(digits)
+    while any(working):
+        pm = working.index(max(working))
+        if (length - start - pm) <= remaining:
+            # the position of this max is too close to the end
+            working[pm] = 0
+        else:
+            return start + pm # index into `digits`, not `remaining`
+
+    raise ValueError
+
+with fileinput.input() as f:
+    for line in f:
+        digits = arr.array("i", [int(n) for n in list(line.rstrip("\n"))])
+
+        t = 0
+        s = 0
+        for r in range(WANT_DIGITS-1,-1,-1):
+
+            p = index_of_valid_max(digits, start=s, remaining=r)
+            d = digits[p]
+            s = p + 1
+
+            t += (10 ** r) * d
+
+        total += t
+
+print(total) # 173416889848394
