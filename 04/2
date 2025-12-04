@@ -1,0 +1,42 @@
+#!/usr/bin/env python3.11
+
+import fileinput
+
+# -1-1j -1+0j, -1+1j
+#  0-1j,        0+1j
+#  1-1j, 1+0j,  1+1j
+
+MAX = 4
+DIRS = [ -1-1j, -1+0j, -1+1j, 0-1j, 0+1j, 1-1j, 1+0j, 1+1j ]
+ROLL = "@"
+
+with fileinput.input() as f:
+
+    # https://www.reddit.com/r/adventofcode/comments/1hawyyf/comment/m1fx3ms/ (2024)
+    grid = { y+x*1j: char
+        for y, line in enumerate(f)
+        for x, char in enumerate(line.strip())
+    }
+
+    ttt = 0
+    while True:
+        newgrid = grid.copy() # can't remove rolls from the grid we're iterating over
+        tt = 0
+        for p, c in newgrid.items():
+            if c == ROLL:
+                t = 0
+                for d in DIRS:
+                    if grid.get(p+d) == ROLL:
+                        t +=1
+
+                if t < MAX:
+                    tt += 1
+                    del grid[p]
+
+        if tt == 0:
+            print("exit")
+            break
+
+        ttt += tt
+
+print(ttt) # 9243
