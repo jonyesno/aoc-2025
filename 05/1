@@ -1,0 +1,25 @@
+#!/usr/bin/env python3.11
+
+import fileinput
+from itertools import groupby
+
+import pprint
+
+with fileinput.input() as f:
+    # would be easier with regular file.read?
+    parts = [list(part) for key, part in groupby(f, key=lambda x: x != '\n') if key]
+    _ranges, _ids = [[line.rstrip("\n") for line in part] for part in parts ]
+
+ranges = []
+for r in _ranges:
+    start, end = r.split("-")
+    ranges.append(range(int(start), int(end) + 1))
+
+t = 0
+for _id in _ids:
+    id=int(_id)
+
+    if any(id in range for range in ranges):
+        t += 1
+
+print(t) # 679

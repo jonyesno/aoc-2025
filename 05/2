@@ -1,0 +1,58 @@
+#!/usr/bin/env python3.11
+
+import fileinput
+from itertools import groupby
+
+import pprint
+
+# l.start--l.stop   r.stop--r.stop   nothing
+# l.start--l.stop
+#   r.start--r.stop                  replace with l.start--r.stop
+# l.start-------l.stop
+#   r.start--r.stop                  delete r
+
+with fileinput.input() as f:
+    # would be easier with regular file.read?
+    parts = [list(part) for key, part in groupby(f, key=lambda x: x != '\n') if key]
+    _ranges, _ids = [[line.rstrip("\n") for line in part] for part in parts ]
+
+ranges = []
+for r in _ranges:
+    start, end = r.split("-")
+    ranges.append(range(int(start), int(end)))
+
+ranges = sorted(ranges, key=lambda r: r.start)
+ranges.reverse()
+
+coalesced = []
+
+# work our way along `ranges` comparing the two frontmost ranges
+# if we can't combine these two then add the left to `coalesced`
+# and start again, with the old right range as the new left range
+left = ranges.pop()
+while len(ranges) > 0:
+    right = ranges.pop()
+
+    if left.stop < right.start:
+        # gap between: add left to `coalesced`, keep right
+        coalesced.append(left)
+        left = right
+
+    elif left.stop <= right.stop:
+        # innerlap: new left that spans both, drop right
+        left = range(left.start, right.stop) # new left, drop right
+
+    elif right.stop <= left.stop:
+        # overlap: keep left, drop right
+        ...
+
+    else:
+        raise AssertionError
+
+coalesced.append(left) # drops out of the loop unprocessed
+
+total = 0
+for c in coalesced:
+    total += (c.stop + 1) - c. start
+
+print(total) # 358155203664116
