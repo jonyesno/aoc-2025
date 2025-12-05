@@ -40,7 +40,7 @@ while len(ranges) > 0:
 
     elif left.stop <= right.stop:
         # innerlap: new left that spans both, drop right
-        left = range(left.start, right.stop) # new left, drop right
+        left = range(left.start, right.stop)
 
     elif right.stop <= left.stop:
         # overlap: keep left, drop right
