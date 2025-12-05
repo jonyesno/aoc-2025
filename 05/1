@@ -3,11 +3,9 @@
 import fileinput
 from itertools import groupby
 
-import pprint
-
 with fileinput.input() as f:
     # would be easier with regular file.read?
-    parts = [list(part) for key, part in groupby(f, key=lambda x: x != '\n') if key]
+    parts = [list(part) for key, part in groupby(f, key=lambda x: x != "\n") if key]
     _ranges, _ids = [[line.rstrip("\n") for line in part] for part in parts ]
 
 ranges = []
