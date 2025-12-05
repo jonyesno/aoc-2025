@@ -34,7 +34,6 @@ with fileinput.input() as f:
                     del grid[p]
 
         if tt == 0:
-            print("exit")
             break
 
         ttt += tt
