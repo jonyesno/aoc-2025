@@ -5,12 +5,6 @@ from itertools import groupby
 
 import pprint
 
-# l.start--l.stop   r.stop--r.stop   nothing
-# l.start--l.stop
-#   r.start--r.stop                  replace with l.start--r.stop
-# l.start-------l.stop
-#   r.start--r.stop                  delete r
-
 with fileinput.input() as f:
     # would be easier with regular file.read?
     parts = [list(part) for key, part in groupby(f, key=lambda x: x != '\n') if key]
@@ -26,30 +20,18 @@ ranges.reverse()
 
 coalesced = []
 
-# work our way along `ranges` comparing the two frontmost ranges
-# if we can't combine these two then add the left to `coalesced`
-# and start again, with the old right range as the new left range
-left = ranges.pop()
+last = ranges.pop()
 while len(ranges) > 0:
-    right = ranges.pop()
+    this = ranges.pop()
 
-    if left.stop < right.start:
-        # gap between: add left to `coalesced`, keep right
-        coalesced.append(left)
-        left = right
-
-    elif left.stop <= right.stop:
-        # innerlap: new left that spans both, drop right
-        left = range(left.start, right.stop)
-
-    elif right.stop <= left.stop:
-        # overlap: keep left, drop right
-        ...
+    if last.stop < this.start:
+        coalesced.append(last)
+        last = this
 
     else:
-        raise AssertionError
+        last = range(min(last.start,this.start), max(last.stop, this.stop))
 
-coalesced.append(left) # drops out of the loop unprocessed
+coalesced.append(last) # drops out of the loop unprocessed
 
 total = 0
 for c in coalesced:
