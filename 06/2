@@ -1,0 +1,39 @@
+#!/usr/bin/env python3.11
+
+import fileinput
+
+with fileinput.input() as f:
+    lines = [ line.rstrip("\n") for line in f]
+
+operations = lines.pop().split()
+
+transposed=[list(zipped) for zipped in zip(*lines, strict=True)]
+
+tt = 0
+t = 0
+
+op = operations.pop(0)
+for line in transposed:
+
+    # problems separated by blank lines fka blank columns
+    if all(column == " " for column in line):
+        tt += t
+        t = 0
+        op = operations.pop(0)
+        continue
+
+    operand = int("".join(line))
+    if t == 0:
+         t = operand
+         continue
+
+    if op == "+":
+        t += operand
+    elif op == "*":
+        t *= operand
+    else:
+        raise AssertionError
+
+tt += t # last subtotal falls out unsummed
+
+print(tt) # 9077004354241

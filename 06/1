@@ -1,0 +1,34 @@
+#!/usr/bin/env python3.11
+
+import fileinput
+import re
+
+all_operands = []
+operations = []
+operation = re.compile("[+*]")
+with fileinput.input() as f:
+    for line in f:
+        bits = line.rstrip("\n").split()
+        if operation.match(bits[0]):
+            operations = bits
+        else:
+            all_operands.append([int(bit) for bit in bits])
+
+tt = 0
+for column, op in enumerate(operations):
+    t = 0
+    for operands in all_operands:
+        if t == 0:
+            t = operands[column]
+            continue
+
+        if op== "+":
+            t += operands[column]
+        elif op == "*":
+            t *= operands[column]
+        else:
+            raise AssertionError
+
+    tt +=t
+
+print(tt) # 4364617236318
