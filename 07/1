@@ -1,0 +1,29 @@
+#!/usr/bin/env python3.11
+
+import fileinput
+
+with fileinput.input() as f:
+    lines = [ list(line.rstrip("\n")) for line in f]
+
+current = lines.pop(0)
+
+splits = 0
+while len(lines) > 0:
+    next = lines.pop(0)
+    for index, char in enumerate(current):
+        match (char, next[index]):
+            case ("S","."):
+                next[index] = "|"
+
+            case ("|","."):
+                next[index] = "|"
+
+            case ("|","^"):
+                splits += 1
+                if index > 0:
+                    next[index-1] = "|"
+                if index < len(current) - 1:
+                    next[index+1] = "|"
+    current = next
+
+print(splits) # 1550

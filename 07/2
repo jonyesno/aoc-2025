@@ -1,0 +1,31 @@
+#!/usr/bin/env python3.11
+
+import fileinput
+
+with fileinput.input() as f:
+    lines = [ list(line.rstrip("\n")) for line in f]
+
+current = lines.pop(0)
+
+while len(lines) > 0:
+    # low rent: use dot cells as visit count
+    next = [0 if (char == ".") else char for char in lines.pop(0)]
+
+    for index, char in enumerate(current):
+        match (char, next[index]):
+            case ("S",0):
+                next[index] = 1
+
+            case (int(this_count), int(next_count)):
+                # propagate visit count directly downwards
+                next[index] = this_count + next_count
+
+            case (int(count),"^"):
+                # add our visit count to downwards left and right
+                if index > 0:
+                    next[index-1] += count
+                if index < len(current) - 1:
+                    next[index+1] += count
+    current = next
+
+print(sum(current)) # 9897897326778
