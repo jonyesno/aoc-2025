@@ -13,14 +13,14 @@ while len(lines) > 0:
 
     for index, char in enumerate(current):
         match (char, next[index]):
-            case ("S",0):
+            case ("S", 0):
                 next[index] = 1
 
             case (int(this_count), int(next_count)):
                 # propagate visit count directly downwards
                 next[index] = this_count + next_count
 
-            case (int(count),"^"):
+            case (int(count), "^"):
                 # add our visit count to downwards left and right
                 if index > 0:
                     next[index-1] += count

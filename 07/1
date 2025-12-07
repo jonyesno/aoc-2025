@@ -12,13 +12,13 @@ while len(lines) > 0:
     next = lines.pop(0)
     for index, char in enumerate(current):
         match (char, next[index]):
-            case ("S","."):
+            case ("S", "."):
                 next[index] = "|"
 
-            case ("|","."):
+            case ("|", "."):
                 next[index] = "|"
 
-            case ("|","^"):
+            case ("|", "^"):
                 splits += 1
                 if index > 0:
                     next[index-1] = "|"
