@@ -1,0 +1,18 @@
+#!/usr/bin/env python3.11
+
+import fileinput
+from itertools import combinations
+
+with fileinput.input() as f:
+    lines = [ line.rstrip("\n") for line in f]
+
+coords = [ (int(x), int(y)) for x, y in [ line.split(",") for line in lines ] ]
+
+def area(a: int, b:int) -> int:
+    """Compute area."""
+    ((x1,y1),(x2,y2)) = (a,b)
+    return (abs(x1-x2) + 1) * (abs(y1-y2) + 1)
+
+largest = max([area(a,b) for a, b in combinations(coords, 2)])
+
+print(largest) # 4754955192
