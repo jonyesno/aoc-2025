@@ -24,11 +24,11 @@ def dist(key: set) -> int:
     """Pythagoras distance^2."""
     return(math.dist(*key))
 
-sorted = sorted(combinations(boxes, 2), key=dist)
+edges = sorted(combinations(boxes, 2), key=dist)
 
 djs = DisjointSet(boxes)
 
-for pair in sorted[:1000]: # or :10 for the example
+for pair in edges[:1000]: # or :10 for the example
     djs.merge(*pair)
 
 lengths = [len(ss) for ss in djs.subsets()]
@@ -36,4 +36,5 @@ lengths.sort(reverse=True)
 
 print(math.prod(lengths[:3])) # 75582
 
-# vim: ft=python # noqa: ERA001
+# ruff: noqa: ERA001
+# vim: ft=python
