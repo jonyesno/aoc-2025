@@ -8,10 +8,10 @@
 # ///
 
 import fileinput
-import pprint
-from scipy.cluster.hierarchy import DisjointSet
+import math
 from itertools import combinations
-from math import prod
+
+from scipy.cluster.hierarchy import DisjointSet
 
 boxes = []
 with fileinput.input() as f:
@@ -19,20 +19,18 @@ with fileinput.input() as f:
         x, y, z = [ int(c) for c in line.rstrip("\n").split(",") ]
         boxes.append((x, y, z))
 
-def dist(key):
-    j1, j2 = key
-    x1, y1, z1 = j1
-    x2, y2, z2 = j2
-    return((x1-x2)**2 + (y1-y2)**2 + (z1-z2)**2)
+def dist(key: set) -> int:
+    """Pythagoras distance^2."""
+    return(math.dist(*key))
 
 sorted = sorted(combinations(boxes, 2), key=dist)
 
 djs = DisjointSet(boxes)
 
-for index, pair in enumerate(sorted):
+for  pair in sorted:
     djs.merge(*pair)
     if len(djs.subsets()) == 1:
-        print(prod(p[0] for p in pair)) # 59039696
+        print(math.prod(p[0] for p in pair)) # 59039696
         break
 
-# vim: ft=python
+# vim: ft=python # noqa: ERA001
