@@ -8,7 +8,7 @@ with fileinput.input() as f:
 
 coords = [ (int(x), int(y)) for x, y in [ line.split(",") for line in lines ] ]
 
-def area(a: int, b:int) -> int:
+def area(a: set, b:set) -> int:
     """Compute area."""
     ((x1,y1),(x2,y2)) = (a,b)
     return (abs(x1-x2) + 1) * (abs(y1-y2) + 1)
