@@ -1,0 +1,47 @@
+#!/usr/bin/env -S uv run --script
+#
+# /// script
+# requires-python = ">=3.11"
+# dependencies = [
+#  "shapely"
+# ]
+# ///
+
+import fileinput
+from itertools import combinations
+
+from shapely import contains
+from shapely.geometry import Polygon
+
+with fileinput.input() as f:
+    lines = [ line.rstrip("\n") for line in f]
+
+map_coords = [ (int(x), int(y)) for x, y in [ line.split(",") for line in lines ] ]
+map_pg = Polygon([*map_coords, map_coords[0]])
+
+def area(b:set) -> int:
+    """Compute area."""
+    ((x1,y1),(x2,y2)) = b
+    return (abs(x1-x2) + 1) * (abs(y1-y2) + 1)
+
+valid = []
+for a, b in combinations(map_coords, 2):
+    ((x1,y1),(x2,y2)) = (a,b)
+    xw = x2-x1
+    yw = y2-y1
+
+    if xw == 0 or yw == 0:
+        continue
+
+    box_corners = [ (x1,y1), (x1+xw,y1), (x1+xw,y1+yw), (x1,y1+yw) ]
+    box_pg = Polygon([*box_corners, box_corners[0]])
+
+    if contains(map_pg, box_pg):
+        valid.append((a,b))
+
+boxes = sorted(valid, key=area, reverse=True)
+
+print(area(boxes[0])) # 1568849600
+
+# ruff: noqa: ERA001
+# vim: ft=python
