@@ -1,0 +1,56 @@
+#!/usr/bin/env python3.11
+
+import fileinput
+import re
+from collections import deque
+
+with fileinput.input() as f:
+    lines = [ line.rstrip("\n") for line in f]
+
+LINE_RE = re.compile(r"^\[(.*?)\] (.*?) {(.*)}$")
+BUTTON_RE = re.compile(r"\((.*?)\)")
+
+def indicator_to_mask(text: str) -> int:
+    """Convert ..##. to 0b00110 etc."""
+    mask = 0
+    for idx, digit in enumerate(text):
+        if digit == "#":
+            mask |= 1 << idx
+
+    return mask
+
+def button_to_mask(digits: list) -> int:
+    """Convert [1,3] to 0b1010 etc."""
+    mask = 0
+    for b in digits:
+        mask |= 1 << b
+    return mask
+
+total = 0
+for line in lines:
+    indicators, buttons, joltage = LINE_RE.search(line).groups()
+
+    indicator_mask = indicator_to_mask(indicators)
+
+    button_groups = BUTTON_RE.findall(buttons)
+    button_digits = [[int(b) for b in f] for f in [ bg.split(",") for bg in button_groups]]
+    button_masks = [button_to_mask(d) for d in button_digits]
+
+    queue = deque([(0,[])])
+    visited = set({0})
+
+    while queue:
+        state, path = queue.popleft()
+
+        if state == indicator_mask:
+            total += len(path)
+            break
+
+        for idx, mask in enumerate(button_masks):
+            new_state = state ^ mask
+
+            if new_state not in visited:
+                queue.append((new_state, [*path,  idx]))
+                visited.add(new_state)
+
+print(total) # 517
