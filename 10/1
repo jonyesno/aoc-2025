@@ -33,7 +33,10 @@ for line in lines:
     indicator_mask = indicator_to_mask(indicators)
 
     button_groups = BUTTON_RE.findall(buttons)
-    button_digits = [[int(b) for b in f] for f in [ bg.split(",") for bg in button_groups]]
+    button_digits = [
+        [int(b) for b in bg.split(",")]
+        for bg in button_groups
+    ]
     button_masks = [button_to_mask(d) for d in button_digits]
 
     queue = deque([(0,[])])
