@@ -1,0 +1,63 @@
+#!/usr/bin/env -S uv run --script
+#
+# /// script
+# requires-python = ">=3.11"
+# dependencies = [
+#  "numpy",
+#  "scipy"
+# ]
+# ///
+
+import fileinput
+import re
+
+import numpy as np
+from scipy.optimize import Bounds, LinearConstraint, milp
+
+with fileinput.input() as f:
+    lines = [ line.rstrip("\n") for line in f]
+
+LINE_RE = re.compile(r"^\[(.*?)\] (.*?) {(.*)}$")
+BUTTON_RE = re.compile(r"\((.*?)\)")
+
+total = 0
+for line in lines:
+    indicators, buttons, joltage = LINE_RE.search(line).groups()
+
+    button_groups = BUTTON_RE.findall(buttons)
+    button_digits = [
+        [int(b) for b in bg.split(",")]
+        for bg in button_groups
+    ]
+    num_counters = len(indicators)
+    num_buttons = len(button_groups)
+
+    A = np.zeros((num_counters, num_buttons), dtype=np.int32)
+
+    for button_idx, advance_counters in enumerate(button_digits):
+        for counter_idx in advance_counters:
+            A[counter_idx][button_idx] = 1
+
+
+    target = np.array([int(j) for j in joltage.split(",")])
+    c = [1] * num_buttons
+
+    constraints = LinearConstraint(A, target, target)
+    integrality = np.ones(num_buttons, dtype=np.int32)
+
+    result = milp(
+        c=c,
+        constraints=constraints,
+        integrality=integrality,
+        bounds=Bounds(0, np.inf),
+    )
+
+    if result.success:
+        total += result.fun
+    else:
+        raise AssertionError
+
+print(int(total)) # 21469
+
+# ruff: noqa: ERA001
+# vim: ft=python
