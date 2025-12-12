@@ -1,0 +1,42 @@
+#!/usr/bin/env python3.11
+
+import fileinput
+import re
+
+LINE_RE = re.compile(r"^(\w+): (.+)$")
+
+map = {}
+
+with fileinput.input() as f:
+    lines = [ line.rstrip("\n") for line in f]
+    for line in lines:
+        src, dests = LINE_RE.search(line).groups()
+        map[src] = set(dests.split(" "))
+
+memo = {}
+
+def count_paths(here: str, *, dac: bool, fft: bool) -> int:
+    """Recursive descent with memo."""
+    if here == "out":
+        if dac and fft:
+            return 1
+        return 0
+
+    state = (here, dac, fft)
+    if state in memo:
+        return memo[state]
+
+    if dac or here == "dac":
+        dac = True
+    if fft or here == "fft":
+        fft = True
+
+    count = 0
+    for next in map[here]:
+        count += count_paths(next, dac=dac, fft=fft)
+
+    memo[state] = count
+    return count
+
+paths = count_paths("svr", dac=False, fft=False)
+print(paths) # 420257875695750
