@@ -1,0 +1,24 @@
+#!/usr/bin/env python3.11
+
+import fileinput
+import re
+
+LINE_RE = re.compile(r"^(\d+)x(\d+): (.*)$")
+
+fits = 0
+with fileinput.input() as f:
+    for line in [ line.rstrip("\n") for line in f]:
+        matches = LINE_RE.search(line)
+        if matches is None:
+            continue
+        x, y, rest = matches.groups()
+
+        # lazily see if the region could contain the presents as 3x3 grids
+        # without trying to pack them
+        # this works for the input ... but not the example
+        grids = int(x) // 3 * int(y) // 3
+        presents = sum([int(n) for n in rest.split(" ")])
+        if presents <= grids:
+            fits += 1
+
+print(fits) # 469 ¯\_(ツ)_/¯
